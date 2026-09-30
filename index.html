@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Multi-Módulo - Tienda de Ropa</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>Sistema de Gestión Integral - Tienda de Ropa</h1>
+
+<nav class="nav-tabs">
+    <button class="tab-btn active" onclick="cambiarModulo('prendas')">Prendas</button>
+    <button class="tab-btn" onclick="cambiarModulo('proveedores')">Proveedores</button>
+    <button class="tab-btn" onclick="cambiarModulo('clientes')">Clientes</button>
+    <button class="tab-btn" onclick="cambiarModulo('ventas')">Ventas</button>
+</nav>
+
+<div class="container">
+    <!-- FORMULARIO DINÁMICO -->
+    <div class="form-box">
+        <h2 id="form-titulo">Gestión de Prendas</h2>
+        <form id="main-form" enctype="multipart/form-data">
+            <input type="hidden" id="entity-id" name="id">
+            <div id="form-fields"></div>
+            <button type="submit" id="btn-guardar" class="btn btn-green">Guardar</button>
+            <button type="button" id="btn-cancelar" class="btn btn-red" style="display:none;" onclick="limpiarFormulario()">Cancelar</button>
+        </form>
+    </div>
+
+    <!-- TABLA DINÁMICA DE RESULTADOS -->
+    <div class="table-box">
+        <h2 id="table-titulo">Listado de Registros</h2>
+        <table>
+            <thead id="table-head"></thead>
+            <tbody id="table-body"></tbody>
+        </table>
+    </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
