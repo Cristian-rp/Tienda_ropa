@@ -117,7 +117,7 @@ if ($entity === 'prendas') {
     }
 }
 
-// 4. MÓDULO VENTAS (CONECTA PRENDAS Y CLIENTES)
+// 4. MÓDULO VENTAS
 
 if ($entity === 'ventas') {
     if ($action === 'listar') {
@@ -127,25 +127,19 @@ if ($entity === 'ventas') {
                 JOIN clientes c ON v.id_cliente = c.id 
                 ORDER BY v.id DESC";
         $res = $conexion->query($sql);
-        $ventas = [];
-        if ($res) {
-            while ($row = $res->fetch_assoc()) {
-                if (!empty($row['comprobante_blob'])) {
-                    $row['comprobante_blob'] = 'data:image/jpeg;base64,' . base64_encode($row['comprobante_blob']);
-                }
-                $ventas[] = $row;
-            }
-        }
-        echo json_encode($ventas);
+        echo json_encode($res ? $res->fetch_all(MYSQLI_ASSOC) : []);
         exit();
     }
     if ($action === 'guardar') {
-        $comp = isset($_FILES['comprobante']) && $_FILES['comprobante']['error'] === UPLOAD_ERR_OK ? file_get_contents($_FILES['comprobante']['tmp_name']) : null;
-        $stmt = $conexion->prepare("INSERT INTO ventas (id_prenda, id_cliente, cantidad, total, metodo_pago, comprobante_blob) VALUES (?, ?, ?, ?, ?, ?)");
-        $null = NULL;
-        $stmt->bind_param("iiidsb", $_POST['id_prenda'], $_POST['id_cliente'], $_POST['cantidad'], $_POST['total'], $_POST['metodo_pago'], $null);
-        if ($comp !== null) $stmt->send_long_data(5, $comp);
-        echo json_encode(["success" => $stmt->execute()]);
+        $stmt = $conexion->prepare("INSERT INTO ventas (id_prenda, id_cliente, cantidad, total, metodo_pago) VALUES (?, ?, ?, ?, ?)");
+        $stmt->bind_param("iiids", $_POST['id_prenda'], $_POST['id_cliente'], $_POST['cantidad'], $_POST['total'], $_POST['metodo_pago']);
+        
+        $ejecutado = $stmt->execute();
+        if (!$ejecutado) {
+            echo json_encode(["success" => false, "error" => $stmt->error]);
+        } else {
+            echo json_encode(["success" => true]);
+        }
         exit();
     }
     if ($action === 'eliminar') {
