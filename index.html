@@ -3,139 +3,248 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tienda de Ropa - Sistema de Gestión Comercial</title>
+    <title>Sistema de Inventario - Tienda de Ropa</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header>
-        <h1>Sistema de Gestión Comercial - Tienda de Ropa</h1>
-    </header>
+    <div class="container">
+        <header>
+            <h1>Sistema de Inventario - Tienda de Ropa</h1>
+        </header>
 
-    <main class="container">
-        <!-- Servicio Integrado: Panel Dashboard & Métricas -->
-        <section class="card dashboard-panel">
-            <h2>Resumen General de la Tienda</h2>
-            <div class="metrics-grid">
-                <div class="card-metric">
-                    <h3>Ingresos Totales</h3>
-                    <p id="metric-ingresos">$0.00</p>
+        <nav class="tabs-nav">
+            <button class="tab-btn active" data-tab="tab-dashboard">Dashboard</button>
+            <button class="tab-btn" data-tab="tab-prendas">Prendas</button>
+            <button class="tab-btn" data-tab="tab-proveedores">Proveedores</button>
+            <button class="tab-btn" data-tab="tab-clientes">Clientes</button>
+            <button class="tab-btn" data-tab="tab-ventas">Ventas</button>
+        </nav>
+
+        <div class="tab-content-container">
+            <!-- DASHBOARD -->
+            <section id="tab-dashboard" class="tab-content active">
+                <div class="card-main">
+                    <h2 class="card-title">Resumen General de la Tienda</h2>
+                    <div class="metrics-grid">
+                        <div class="card-metric">
+                            <h3>Ingresos Totales</h3>
+                            <p id="metric-ingresos">$0.00</p>
+                        </div>
+                        <div class="card-metric">
+                            <h3>Ventas Realizadas</h3>
+                            <p id="metric-ventas">0</p>
+                        </div>
+                        <div class="card-metric">
+                            <h3>Clientes Registrados</h3>
+                            <p id="metric-clientes">0</p>
+                        </div>
+                        <div class="card-metric">
+                            <h3>Producto Más Vendido</h3>
+                            <p id="metric-top">-</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="card-metric">
-                    <h3>Ventas Realizadas</h3>
-                    <p id="metric-ventas">0</p>
+            </section>
+
+            <!-- PRENDAS -->
+            <section id="tab-prendas" class="tab-content">
+                <div class="layout-two-columns">
+                    <div class="card-sidebar">
+                        <h2 class="card-title">Agregar Prenda</h2>
+                        <form id="form-prenda" class="form-vertical" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <label>Nombre de la Prenda:</label>
+                                <input type="text" name="nombre" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Precio ($):</label>
+                                <input type="number" step="0.01" name="precio" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Categoría (MySQL ENUM):</label>
+                                <select name="categoria" required>
+                                    <option value="">Seleccione...</option>
+                                    <option value="Camisetas">Camisetas</option>
+                                    <option value="Pantalones">Pantalones</option>
+                                    <option value="Chaquetas">Chaquetas</option>
+                                    <option value="Accesorios">Accesorios</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Fecha Ingreso (MySQL DATE):</label>
+                                <input type="date" name="fecha_ingreso" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Proveedor:</label>
+                                <select name="id_proveedor" id="select-proveedor-prenda">
+                                    <option value="">Sin Proveedor</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Imagen (MySQL BLOB):</label>
+                                <input type="file" name="imagen" accept="image/*">
+                            </div>
+                            <button type="submit">Guardar Prenda</button>
+                        </form>
+                    </div>
+                    <div class="card-main">
+                        <h2 class="card-title">Inventario Registrado</h2>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Imagen (BLOB)</th>
+                                        <th>Nombre</th>
+                                        <th>Precio</th>
+                                        <th>Categoría (ENUM)</th>
+                                        <th>Ingreso (DATE)</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabla-prendas"></tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
-                <div class="card-metric">
-                    <h3>Clientes Registrados</h3>
-                    <p id="metric-clientes">0</p>
+            </section>
+
+            <!-- PROVEEDORES -->
+            <section id="tab-proveedores" class="tab-content">
+                <div class="layout-two-columns">
+                    <div class="card-sidebar">
+                        <h2 class="card-title">Agregar Proveedor</h2>
+                        <form id="form-proveedor" class="form-vertical">
+                            <div class="form-group">
+                                <label>Nombre Empresa:</label>
+                                <input type="text" name="nombre_empresa" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Teléfono:</label>
+                                <input type="text" name="telefono" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Correo Electrónico:</label>
+                                <input type="email" name="email" required>
+                            </div>
+                            <button type="submit">Guardar Proveedor</button>
+                        </form>
+                    </div>
+                    <div class="card-main">
+                        <h2 class="card-title">Proveedores Registrados</h2>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>ID</th><th>Empresa</th><th>Teléfono</th><th>Email</th><th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabla-proveedores"></tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
-                <div class="card-metric">
-                    <h3>Producto Más Vendido</h3>
-                    <p id="metric-top">-</p>
+            </section>
+
+            <!-- CLIENTES -->
+            <section id="tab-clientes" class="tab-content">
+                <div class="layout-two-columns">
+                    <div class="card-sidebar">
+                        <h2 class="card-title">Agregar Cliente</h2>
+                        <form id="form-cliente" class="form-vertical">
+                            <div class="form-group">
+                                <label>Nombre Completo:</label>
+                                <input type="text" name="nombre" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Email:</label>
+                                <input type="email" name="email" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Tipo Cliente (ENUM):</label>
+                                <select name="tipo_cliente" required>
+                                    <option value="Regular">Regular</option>
+                                    <option value="VIP">VIP</option>
+                                    <option value="Mayorista">Mayorista</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Fecha Nacimiento (DATE):</label>
+                                <input type="date" name="fecha_nacimiento" required>
+                            </div>
+                            <button type="submit">Guardar Cliente</button>
+                        </form>
+                    </div>
+                    <div class="card-main">
+                        <h2 class="card-title">Clientes Registrados</h2>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>ID</th><th>Nombre</th><th>Email</th><th>Tipo</th><th>F. Nacimiento</th><th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabla-clientes"></tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <!-- Módulo 1: Proveedores -->
-        <section class="card">
-            <h2>Gestión de Proveedores</h2>
-            <form id="form-proveedor" class="form-grid">
-                <input type="text" name="nombre_empresa" placeholder="Nombre Empresa" required>
-                <input type="text" name="telefono" placeholder="Teléfono" required>
-                <input type="email" name="email" placeholder="Correo Electrónico" required>
-                <button type="submit">Guardar Proveedor</button>
-            </form>
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th><th>Empresa</th><th>Teléfono</th><th>Email</th><th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="tabla-proveedores"></tbody>
-            </table>
-        </section>
-
-        <!-- Módulo 2: Clientes -->
-        <section class="card">
-            <h2>Gestión de Clientes</h2>
-            <form id="form-cliente" class="form-grid">
-                <input type="text" name="nombre" placeholder="Nombre Completo" required>
-                <input type="email" name="email" placeholder="Email" required>
-                <select name="tipo_cliente" required>
-                    <option value="Regular">Regular</option>
-                    <option value="VIP">VIP</option>
-                    <option value="Mayorista">Mayorista</option>
-                </select>
-                <input type="date" name="fecha_nacimiento" required>
-                <button type="submit">Guardar Cliente</button>
-            </form>
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th><th>Nombre</th><th>Email</th><th>Tipo</th><th>F. Nacimiento</th><th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="tabla-clientes"></tbody>
-            </table>
-        </section>
-
-        <!-- Módulo 3: Prendas (Inventario) -->
-        <section class="card">
-            <h2>Gestión de Prendas (Inventario)</h2>
-            <form id="form-prenda" class="form-grid" enctype="multipart/form-data">
-                <input type="text" name="nombre" placeholder="Nombre Prenda" required>
-                <input type="number" step="0.01" name="precio" placeholder="Precio $" required>
-                <select name="categoria" required>
-                    <option value="Camisetas">Camisetas</option>
-                    <option value="Pantalones">Pantalones</option>
-                    <option value="Chaquetas">Chaquetas</option>
-                    <option value="Accesorios">Accesorios</option>
-                </select>
-                <input type="date" name="fecha_ingreso" required>
-                <select name="id_proveedor" id="select-proveedor-prenda">
-                    <option value="">Sin Proveedor</option>
-                </select>
-                <input type="file" name="imagen" accept="image/*">
-                <button type="submit">Guardar Prenda</button>
-            </form>
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th><th>Imagen</th><th>Prenda</th><th>Precio</th><th>Categoría</th><th>Proveedor</th><th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="tabla-prendas"></tbody>
-            </table>
-        </section>
-
-        <!-- Módulo 4: Ventas -->
-        <section class="card">
-            <h2>Registro de Ventas</h2>
-            <form id="form-venta" class="form-grid">
-                <select name="id_cliente" id="select-cliente-venta" required>
-                    <option value="">Seleccione Cliente</option>
-                </select>
-                <select name="id_prenda" id="select-prenda-venta" required>
-                    <option value="">Seleccione Prenda</option>
-                </select>
-                <input type="number" name="cantidad" placeholder="Cantidad" value="1" min="1" required>
-                <input type="number" step="0.01" name="total" placeholder="Total $ (Opcional)">
-                <select name="metodo_pago" required>
-                    <option value="Efectivo">Efectivo</option>
-                    <option value="Tarjeta">Tarjeta</option>
-                    <option value="Transferencia">Transferencia</option>
-                </select>
-                <button type="submit">Registrar Venta</button>
-            </form>
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th><th>Cliente</th><th>Prenda</th><th>Cant.</th><th>Total</th><th>Pago</th><th>Fecha Venta</th><th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="tabla-ventas"></tbody>
-            </table>
-        </section>
-    </main>
+            <!-- VENTAS -->
+            <section id="tab-ventas" class="tab-content">
+                <div class="layout-two-columns">
+                    <div class="card-sidebar">
+                        <h2 class="card-title">Registrar Venta</h2>
+                        <form id="form-venta" class="form-vertical">
+                            <div class="form-group">
+                                <label>Cliente:</label>
+                                <select name="id_cliente" id="select-cliente-venta" required>
+                                    <option value="">Seleccione Cliente</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Prenda:</label>
+                                <select name="id_prenda" id="select-prenda-venta" required>
+                                    <option value="">Seleccione Prenda</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Cantidad:</label>
+                                <input type="number" name="cantidad" value="1" min="1" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Total $ (Opcional):</label>
+                                <input type="number" step="0.01" name="total">
+                            </div>
+                            <div class="form-group">
+                                <label>Método Pago (ENUM):</label>
+                                <select name="metodo_pago" required>
+                                    <option value="Efectivo">Efectivo</option>
+                                    <option value="Tarjeta">Tarjeta</option>
+                                    <option value="Transferencia">Transferencia</option>
+                                </select>
+                            </div>
+                            <button type="submit">Procesar Venta</button>
+                        </form>
+                    </div>
+                    <div class="card-main">
+                        <h2 class="card-title">Ventas Registradas</h2>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>ID</th><th>Cliente</th><th>Prenda</th><th>Cant.</th><th>Total</th><th>Pago</th><th>Fecha Venta</th><th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabla-ventas"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
 
     <script src="app.js"></script>
 </body>

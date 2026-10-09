@@ -2,65 +2,63 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
 }
 
 body {
-    background-color: #12121e;
-    color: #e0e0e0;
-    padding: 20px;
-    line-height: 1.6;
+    background-color: #121217;
+    color: #ffffff;
+    padding: 25px;
 }
 
 .container {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
 }
 
+/* Encabezado con barra lateral naranja */
 header {
-    text-align: center;
     margin-bottom: 25px;
-    padding-bottom: 15px;
-    border-bottom: 2px solid #2d2d3f;
+    padding-left: 15px;
+    border-left: 4px solid #e06d3b;
 }
 
 header h1 {
     color: #ffffff;
-    font-size: 2rem;
-    letter-spacing: 0.5px;
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: 0.2px;
 }
 
-/* MENÚ DE PESTAÑAS (TABS) */
+/* Menú de Pestañas estilo oscuro compacto */
 .tabs-nav {
     display: flex;
     gap: 10px;
-    margin-bottom: 20px;
-    border-bottom: 2px solid #2d2d3f;
-    padding-bottom: 10px;
-    flex-wrap: wrap;
+    margin-bottom: 25px;
 }
 
 .tab-btn {
-    background-color: #1e1e2d;
-    color: #a0a0b8;
-    border: 1px solid #2d2d3f;
-    padding: 10px 20px;
+    background-color: #1a1a24;
+    color: #a0a0b0;
+    border: 1px solid #282836;
+    padding: 8px 20px;
     border-radius: 6px;
     cursor: pointer;
-    font-size: 0.95rem;
-    font-weight: 600;
+    font-size: 0.9rem;
+    font-weight: 500;
     transition: all 0.2s ease;
 }
 
 .tab-btn:hover {
-    background-color: #2b2b3d;
+    background-color: #222230;
     color: #ffffff;
 }
 
 .tab-btn.active {
-    background-color: #ff9f43;
-    color: #12121e;
-    border-color: #ff9f43;
+    background-color: #e06d3b;
+    color: #ffffff;
+    border-color: #e06d3b;
+    font-weight: 600;
 }
 
 .tab-content {
@@ -71,62 +69,48 @@ header h1 {
     display: block;
 }
 
-/* CARDS & CONTENIDOS */
-.card {
-    background-color: #1a1a27;
-    border: 1px solid #2d2d3f;
-    border-radius: 10px;
-    padding: 25px;
-    margin-bottom: 20px;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
-}
-
-.card h2 {
-    color: #ff9f43;
-    font-size: 1.3rem;
-    margin-bottom: 20px;
-    border-bottom: 1px solid #2d2d3f;
-    padding-bottom: 8px;
-}
-
-/* DASHBOARD */
-.metrics-grid {
+/* LAYOUT A 2 COLUMNAS (Formulario Izq | Tabla/Panel Der) */
+.layout-two-columns {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 15px;
-    margin-top: 15px;
+    grid-template-columns: 320px 1fr;
+    gap: 25px;
+    align-items: start;
 }
 
-.card-metric {
-    background-color: #222232;
-    border: 1px solid #323248;
+/* Tarjeta / Contenedor estilo primera imagen */
+.card-sidebar, .card-main {
+    background-color: #1a1a24;
+    border: 1px solid #262634;
     border-radius: 8px;
     padding: 20px;
-    text-align: center;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
-.card-metric h3 {
-    font-size: 0.85rem;
-    color: #a0a0b8;
-    margin-bottom: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
+.card-title {
+    color: #e06d3b;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 20px;
 }
 
-.card-metric p {
-    font-size: 1.6rem;
-    font-weight: bold;
-    color: #ffffff;
-    margin: 0;
-}
-
-/* FORMULARIOS */
-.form-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+/* FORMULARIOS VERTICALES COMPACTOS */
+.form-vertical {
+    display: flex;
+    flex-direction: column;
     gap: 15px;
-    margin-bottom: 25px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #a0a0b0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 input[type="text"],
@@ -136,86 +120,112 @@ input[type="date"],
 input[type="file"],
 select {
     width: 100%;
-    padding: 12px 15px;
-    background-color: #262636;
-    border: 1px solid #3a3a52;
+    padding: 10px 12px;
+    background-color: #242432;
+    border: 1px solid #323246;
     border-radius: 6px;
     color: #ffffff;
-    font-size: 0.95rem;
+    font-size: 0.88rem;
     outline: none;
-    transition: border-color 0.2s ease;
 }
 
-input[type="text"]:focus,
-input[type="number"]:focus,
-input[type="email"]:focus,
-input[type="date"]:focus,
-select:focus {
-    border-color: #ff9f43;
+input:focus, select:focus {
+    border-color: #e06d3b;
 }
 
-button {
-    background-color: #38384d;
+button[type="submit"] {
+    background-color: #e06d3b;
     color: #ffffff;
     border: none;
-    padding: 12px 20px;
+    padding: 12px;
     border-radius: 6px;
     cursor: pointer;
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
+    margin-top: 5px;
     transition: background-color 0.2s ease;
 }
 
-button:hover {
-    background-color: #ff9f43;
-    color: #12121e;
+button[type="submit"]:hover {
+    background-color: #c85a2b;
 }
 
-/* TABLAS */
+/* TABLA OSCURA */
+.table-container {
+    overflow-x: auto;
+}
+
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 10px;
-    overflow: hidden;
-    border-radius: 6px;
-}
-
-th, td {
-    padding: 12px 15px;
-    text-align: left;
 }
 
 th {
-    background-color: #262636;
-    color: #a0a0b8;
-    font-size: 0.85rem;
+    background-color: #222230;
+    color: #a0a0b0;
+    font-size: 0.75rem;
+    font-weight: 700;
     text-transform: uppercase;
-    border-bottom: 2px solid #3a3a52;
+    letter-spacing: 0.5px;
+    padding: 12px 10px;
+    text-align: left;
 }
 
 td {
-    background-color: #1e1e2d;
-    border-bottom: 1px solid #2d2d3f;
-    font-size: 0.95rem;
+    padding: 12px 10px;
+    border-bottom: 1px solid #242432;
+    font-size: 0.88rem;
+    color: #e0e0e0;
 }
 
 tr:hover td {
-    background-color: #252538;
+    background-color: #20202c;
 }
 
 td button {
-    padding: 6px 12px;
-    font-size: 0.85rem;
-    background-color: #d63031;
+    background-color: #38384a;
+    color: #ffffff;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    cursor: pointer;
 }
 
 td button:hover {
-    background-color: #ff7675;
+    background-color: #d63031;
+}
+
+/* DASHBOARD GRID */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.card-metric {
+    background-color: #222230;
+    border: 1px solid #2a2a3c;
+    border-radius: 6px;
+    padding: 20px;
+    text-align: center;
+}
+
+.card-metric h3 {
+    font-size: 0.75rem;
+    color: #a0a0b0;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+
+.card-metric p {
+    font-size: 1.4rem;
+    font-weight: 700;
     color: #ffffff;
 }
 
-@media (max-width: 768px) {
-    .tabs-nav { flex-direction: column; }
-    .form-grid { grid-template-columns: 1fr; }
-    table { display: block; overflow-x: auto; white-space: nowrap; }
+@media (max-width: 900px) {
+    .layout-two-columns {
+        grid-template-columns: 1fr;
+    }
 }
