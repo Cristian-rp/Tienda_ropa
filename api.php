@@ -149,4 +149,36 @@ if ($entity === 'ventas') {
         exit();
     }
 }
+
+// 5. NUEVO SERVICIO INTEGRADO: DASHBOARD & ESTADÍSTICAS
+
+if ($entity === 'dashboard') {
+    if ($action === 'resumen') {
+        // 1. Total acumulado de ingresos y cantidad de ventas
+        $resVentas = $conexion->query("SELECT COUNT(*) AS total_ventas, COALESCE(SUM(total), 0) AS ingresos_totales FROM ventas");
+        $metrics = $resVentas->fetch_assoc();
+
+        // 2. Total de clientes registrados
+        $resClientes = $conexion->query("SELECT COUNT(*) AS total_clientes FROM clientes");
+        $metrics['total_clientes'] = $resClientes->fetch_assoc()['total_clientes'];
+
+        // 3. Total de prendas en inventario
+        $resPrendas = $conexion->query("SELECT COUNT(*) AS total_prendas FROM prendas");
+        $metrics['total_prendas'] = $resPrendas->fetch_assoc()['total_prendas'];
+
+        // 4. Producto / Prenda más vendida
+        $sqlTop = "SELECT p.nombre, SUM(v.cantidad) AS unidades_vendidas 
+                   FROM ventas v 
+                   JOIN prendas p ON v.id_prenda = p.id 
+                   GROUP BY v.id_prenda 
+                   ORDER BY unidades_vendidas DESC 
+                   LIMIT 1";
+        $resTop = $conexion->query($sqlTop);
+        $topPrenda = $resTop ? $resTop->fetch_assoc() : null;
+        $metrics['producto_estrella'] = $topPrenda ? $topPrenda['nombre'] . " (" . $topPrenda['unidades_vendidas'] . " uds)" : "Sin ventas";
+
+        echo json_encode(["success" => true, "data" => $metrics]);
+        exit();
+    }
+}
 ?>

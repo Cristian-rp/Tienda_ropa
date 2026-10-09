@@ -3,42 +3,140 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema Multi-Módulo - Tienda de Ropa</title>
+    <title>Tienda de Ropa - Sistema de Gestión Comercial</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <header>
+        <h1>Sistema de Gestión Comercial - Tienda de Ropa</h1>
+    </header>
 
-<h1>Sistema de Gestión Integral - Tienda de Ropa</h1>
+    <main class="container">
+        <!-- Servicio Integrado: Panel Dashboard & Métricas -->
+        <section class="card dashboard-panel">
+            <h2>Resumen General de la Tienda</h2>
+            <div class="metrics-grid">
+                <div class="card-metric">
+                    <h3>Ingresos Totales</h3>
+                    <p id="metric-ingresos">$0.00</p>
+                </div>
+                <div class="card-metric">
+                    <h3>Ventas Realizadas</h3>
+                    <p id="metric-ventas">0</p>
+                </div>
+                <div class="card-metric">
+                    <h3>Clientes Registrados</h3>
+                    <p id="metric-clientes">0</p>
+                </div>
+                <div class="card-metric">
+                    <h3>Producto Más Vendido</h3>
+                    <p id="metric-top">-</p>
+                </div>
+            </div>
+        </section>
 
-<nav class="nav-tabs">
-    <button class="tab-btn active" onclick="cambiarModulo('prendas')">Prendas</button>
-    <button class="tab-btn" onclick="cambiarModulo('proveedores')">Proveedores</button>
-    <button class="tab-btn" onclick="cambiarModulo('clientes')">Clientes</button>
-    <button class="tab-btn" onclick="cambiarModulo('ventas')">Ventas</button>
-</nav>
+        <!-- Módulo 1: Proveedores -->
+        <section class="card">
+            <h2>Gestión de Proveedores</h2>
+            <form id="form-proveedor" class="form-grid">
+                <input type="text" name="nombre_empresa" placeholder="Nombre Empresa" required>
+                <input type="text" name="telefono" placeholder="Teléfono" required>
+                <input type="email" name="email" placeholder="Correo Electrónico" required>
+                <button type="submit">Guardar Proveedor</button>
+            </form>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th><th>Empresa</th><th>Teléfono</th><th>Email</th><th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-proveedores"></tbody>
+            </table>
+        </section>
 
-<div class="container">
-    <!-- FORMULARIO DINÁMICO -->
-    <div class="form-box">
-        <h2 id="form-titulo">Gestión de Prendas</h2>
-        <form id="main-form" enctype="multipart/form-data">
-            <input type="hidden" id="entity-id" name="id">
-            <div id="form-fields"></div>
-            <button type="submit" id="btn-guardar" class="btn btn-green">Guardar</button>
-            <button type="button" id="btn-cancelar" class="btn btn-red" style="display:none;" onclick="limpiarFormulario()">Cancelar</button>
-        </form>
-    </div>
+        <!-- Módulo 2: Clientes -->
+        <section class="card">
+            <h2>Gestión de Clientes</h2>
+            <form id="form-cliente" class="form-grid">
+                <input type="text" name="nombre" placeholder="Nombre Completo" required>
+                <input type="email" name="email" placeholder="Email" required>
+                <select name="tipo_cliente" required>
+                    <option value="Regular">Regular</option>
+                    <option value="VIP">VIP</option>
+                    <option value="Mayorista">Mayorista</option>
+                </select>
+                <input type="date" name="fecha_nacimiento" required>
+                <button type="submit">Guardar Cliente</button>
+            </form>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th><th>Nombre</th><th>Email</th><th>Tipo</th><th>F. Nacimiento</th><th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-clientes"></tbody>
+            </table>
+        </section>
 
-    <!-- TABLA DINÁMICA DE RESULTADOS -->
-    <div class="table-box">
-        <h2 id="table-titulo">Listado de Registros</h2>
-        <table>
-            <thead id="table-head"></thead>
-            <tbody id="table-body"></tbody>
-        </table>
-    </div>
-</div>
+        <!-- Módulo 3: Prendas (Inventario) -->
+        <section class="card">
+            <h2>Gestión de Prendas (Inventario)</h2>
+            <form id="form-prenda" class="form-grid" enctype="multipart/form-data">
+                <input type="text" name="nombre" placeholder="Nombre Prenda" required>
+                <input type="number" step="0.01" name="precio" placeholder="Precio $" required>
+                <select name="categoria" required>
+                    <option value="Camisetas">Camisetas</option>
+                    <option value="Pantalones">Pantalones</option>
+                    <option value="Chaquetas">Chaquetas</option>
+                    <option value="Accesorios">Accesorios</option>
+                </select>
+                <input type="date" name="fecha_ingreso" required>
+                <select name="id_proveedor" id="select-proveedor-prenda">
+                    <option value="">Sin Proveedor</option>
+                </select>
+                <input type="file" name="imagen" accept="image/*">
+                <button type="submit">Guardar Prenda</button>
+            </form>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th><th>Imagen</th><th>Prenda</th><th>Precio</th><th>Categoría</th><th>Proveedor</th><th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-prendas"></tbody>
+            </table>
+        </section>
 
-<script src="app.js"></script>
+        <!-- Módulo 4: Ventas -->
+        <section class="card">
+            <h2>Registro de Ventas</h2>
+            <form id="form-venta" class="form-grid">
+                <select name="id_cliente" id="select-cliente-venta" required>
+                    <option value="">Seleccione Cliente</option>
+                </select>
+                <select name="id_prenda" id="select-prenda-venta" required>
+                    <option value="">Seleccione Prenda</option>
+                </select>
+                <input type="number" name="cantidad" placeholder="Cantidad" value="1" min="1" required>
+                <input type="number" step="0.01" name="total" placeholder="Total $ (Opcional)">
+                <select name="metodo_pago" required>
+                    <option value="Efectivo">Efectivo</option>
+                    <option value="Tarjeta">Tarjeta</option>
+                    <option value="Transferencia">Transferencia</option>
+                </select>
+                <button type="submit">Registrar Venta</button>
+            </form>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th><th>Cliente</th><th>Prenda</th><th>Cant.</th><th>Total</th><th>Pago</th><th>Fecha Venta</th><th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-ventas"></tbody>
+            </table>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
 </body>
 </html>
