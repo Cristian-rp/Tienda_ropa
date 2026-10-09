@@ -16,7 +16,6 @@ body {
     margin: 0 auto;
 }
 
-/* Encabezado con barra lateral naranja */
 header {
     margin-bottom: 25px;
     padding-left: 15px;
@@ -30,7 +29,7 @@ header h1 {
     letter-spacing: 0.2px;
 }
 
-/* Menú de Pestañas estilo oscuro compacto */
+/* NAVEGACIÓN DE PESTAÑAS */
 .tabs-nav {
     display: flex;
     gap: 10px;
@@ -61,15 +60,16 @@ header h1 {
     font-weight: 600;
 }
 
+/* OCULTAR PESTAÑAS INACTIVAS */
 .tab-content {
-    display: none;
+    display: none !important;
 }
 
 .tab-content.active {
-    display: block;
+    display: block !important;
 }
 
-/* LAYOUT A 2 COLUMNAS (Formulario Izq | Tabla/Panel Der) */
+/* LAYOUT 2 COLUMNAS */
 .layout-two-columns {
     display: grid;
     grid-template-columns: 320px 1fr;
@@ -77,7 +77,6 @@ header h1 {
     align-items: start;
 }
 
-/* Tarjeta / Contenedor estilo primera imagen */
 .card-sidebar, .card-main {
     background-color: #1a1a24;
     border: 1px solid #262634;
@@ -92,7 +91,7 @@ header h1 {
     margin-bottom: 20px;
 }
 
-/* FORMULARIOS VERTICALES COMPACTOS */
+/* FORMULARIOS */
 .form-vertical {
     display: flex;
     flex-direction: column;
@@ -150,7 +149,7 @@ button[type="submit"]:hover {
     background-color: #c85a2b;
 }
 
-/* TABLA OSCURA */
+/* TABLA */
 .table-container {
     overflow-x: auto;
 }
@@ -196,7 +195,7 @@ td button:hover {
     background-color: #d63031;
 }
 
-/* DASHBOARD GRID */
+/* DASHBOARD */
 .metrics-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));

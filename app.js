@@ -1,24 +1,18 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Inicializar listeners de pestañas
     initTabs();
 
-    // Cargar datos
     cargarDashboard();
     cargarProveedores();
     cargarClientes();
     cargarPrendas();
     cargarVentas();
 
-    // Eventos Formularios
     document.getElementById('form-proveedor').addEventListener('submit', guardarProveedor);
     document.getElementById('form-cliente').addEventListener('submit', guardarCliente);
     document.getElementById('form-prenda').addEventListener('submit', guardarPrenda);
     document.getElementById('form-venta').addEventListener('submit', guardarVenta);
 });
 
-// ==========================================
-// CONTROL DE PESTAÑAS (TABS)
-// ==========================================
 function initTabs() {
     const buttons = document.querySelectorAll('.tab-btn');
     const contents = document.querySelectorAll('.tab-content');
@@ -31,14 +25,15 @@ function initTabs() {
             contents.forEach(c => c.classList.remove('active'));
 
             btn.classList.add('active');
-            document.getElementById(target).classList.add('active');
+            const targetElement = document.getElementById(target);
+            if (targetElement) {
+                targetElement.classList.add('active');
+            }
         });
     });
 }
 
-// ==========================================
 // DASHBOARD
-// ==========================================
 async function cargarDashboard() {
     try {
         const res = await fetch('api.php?entity=dashboard&action=resumen');
@@ -56,9 +51,7 @@ async function cargarDashboard() {
     }
 }
 
-// ==========================================
 // PROVEEDORES
-// ==========================================
 async function cargarProveedores() {
     try {
         const res = await fetch('api.php?entity=proveedores&action=listar');
@@ -102,9 +95,7 @@ async function guardarProveedor(e) {
     }
 }
 
-// ==========================================
 // CLIENTES
-// ==========================================
 async function cargarClientes() {
     try {
         const res = await fetch('api.php?entity=clientes&action=listar');
@@ -150,9 +141,7 @@ async function guardarCliente(e) {
     }
 }
 
-// ==========================================
 // PRENDAS
-// ==========================================
 async function cargarPrendas() {
     try {
         const res = await fetch('api.php?entity=prendas&action=listar');
@@ -166,7 +155,7 @@ async function cargarPrendas() {
 
         datos.forEach(p => {
             const imgHtml = p.imagen_blob 
-                ? `<img src="${p.imagen_blob}" width="50" height="50" style="object-fit:cover; border-radius:4px;">` 
+                ? `<img src="${p.imagen_blob}" width="45" height="45" style="object-fit:cover; border-radius:4px;">` 
                 : 'Sin Imagen';
 
             tbody.innerHTML += `
@@ -176,7 +165,7 @@ async function cargarPrendas() {
                     <td>${p.nombre}</td>
                     <td>$${parseFloat(p.precio).toFixed(2)}</td>
                     <td>${p.categoria}</td>
-                    <td>${p.proveedor}</td>
+                    <td>${p.fecha_ingreso}</td>
                     <td>
                         <button onclick="eliminarEntidad('prendas', ${p.id})">Eliminar</button>
                     </td>
@@ -203,9 +192,7 @@ async function guardarPrenda(e) {
     }
 }
 
-// ==========================================
 // VENTAS
-// ==========================================
 async function cargarVentas() {
     try {
         const res = await fetch('api.php?entity=ventas&action=listar');
@@ -254,13 +241,11 @@ async function guardarVenta(e) {
         cargarVentas();
         cargarDashboard();
     } else {
-        alert("Error al registrar venta: " + (data.error || "Verifique los datos cargados."));
+        alert("Error al registrar venta: " + (data.error || "Verifique los datos ingresados."));
     }
 }
 
-// ==========================================
 // ELIMINAR
-// ==========================================
 async function eliminarEntidad(entity, id) {
     if (!confirm("¿Está seguro de eliminar este registro?")) return;
     const res = await fetch(`api.php?entity=${entity}&action=eliminar&id=${id}`);
