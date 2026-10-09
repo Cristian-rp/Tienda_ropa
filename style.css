@@ -128,12 +128,6 @@ input:focus, select:focus {
     border-color: #e06d3b;
 }
 
-#map {
-    height: 150px;
-    border-radius: 6px;
-    border: 1px solid #323246;
-}
-
 button[type="submit"] {
     background-color: #e06d3b;
     color: #ffffff;

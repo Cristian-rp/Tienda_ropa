@@ -1,5 +1,3 @@
-let mapInstance = null;
-
 document.addEventListener('DOMContentLoaded', () => {
     initTabs();
 
@@ -14,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('form-prenda').addEventListener('submit', guardarPrenda);
     document.getElementById('form-venta').addEventListener('submit', guardarVenta);
 
-    // EVENTOS PARA CÁLCULO AUTOMÁTICO DEL TOTAL
+    // Eventos para cálculo automático del total
     const selectPrenda = document.getElementById('select-prenda-venta');
     const inputCantidad = document.getElementById('venta-cantidad');
 
@@ -38,11 +36,6 @@ function initTabs() {
             if (targetElement) {
                 targetElement.classList.add('active');
             }
-
-            // Inicializar mapa al hacer clic en Ventas
-            if (target === 'tab-ventas') {
-                setTimeout(initMap, 300);
-            }
         });
     });
 }
@@ -63,23 +56,82 @@ function calcularTotalVenta() {
     inputTotal.value = totalCalculado.toFixed(2);
 }
 
-// INICIALIZAR MAPA
-function initMap() {
-    const mapContainer = document.getElementById('map');
-    if (!mapContainer) return;
+// LÓGICA DE REGISTRO Y PASARELA DE PAGO EN NUEVA PESTAÑA
+async function guardarVenta(e) {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const metodo = formData.get('metodo_pago');
+    const total = formData.get('total');
+    const btn = document.getElementById('btn-procesar-venta');
 
-    if (!mapInstance) {
-        mapInstance = L.map('map').setView([4.5802, -74.2206], 13);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap'
-        }).addTo(mapInstance);
-        L.marker([4.5802, -74.2206], { draggable: true }).addTo(mapInstance);
-    } else {
-        mapInstance.invalidateSize();
+    if (btn) btn.disabled = true;
+
+    try {
+        // 1. Guardar primero la venta en la Base de Datos
+        const resVenta = await fetch('api.php?entity=ventas&action=guardar', {
+            method: 'POST',
+            body: formData
+        });
+        const dataVenta = await resVenta.json();
+
+        if (dataVenta.success) {
+            // 2. Si el pago es con Tarjeta o Transferencia, abrimos la Pasarela en una nueva pestaña
+            if (metodo === 'Tarjeta' || metodo === 'Transferencia') {
+                const txId = "TXN-" + Math.random().toString(36).substring(2, 9).toUpperCase();
+                
+                // Generar contenido HTML dinámico para la nueva pestaña
+                const checkoutWin = window.open("", "_blank");
+                if (checkoutWin) {
+                    checkoutWin.document.write(`
+                        <!DOCTYPE html>
+                        <html lang="es">
+                        <head>
+                            <meta charset="UTF-8">
+                            <title>Pasarela de Pago Segura - API Gateway</title>
+                            <style>
+                                body { background-color: #121217; color: #fff; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+                                .checkout-card { background: #1a1a24; border: 1px solid #e06d3b; padding: 30px; border-radius: 12px; width: 380px; text-align: center; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+                                h2 { color: #e06d3b; margin-bottom: 10px; }
+                                .badge { background: #e06d3b; color: #fff; padding: 4px 10px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; }
+                                .amount { font-size: 2rem; margin: 20px 0; color: #4cd137; }
+                                .info { font-size: 0.9rem; color: #a0a0b0; margin-bottom: 20px; text-align: left; }
+                                button { background: #4cd137; color: #121217; border: none; padding: 12px; width: 100%; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1rem; }
+                                button:hover { background: #44bd32; }
+                            </style>
+                        </head>
+                        <body>
+                            <div class="checkout-card">
+                                <h2>Pasarela de Pago API</h2>
+                                <span class="badge">PROCESAMIENTO SEGURO</span>
+                                <div class="amount">$${total} USD</div>
+                                <div class="info">
+                                    <p><strong>Método:</strong> ${metodo}</p>
+                                    <p><strong>ID Transacción:</strong> ${txId}</p>
+                                    <p><strong>Estado:</strong> Aprobado por Banco Central</p>
+                                </div>
+                                <button onclick="window.close()">Confirmar y Volver al Sistema</button>
+                            </div>
+                        </body>
+                        </html>
+                    `);
+                }
+            }
+
+            alert("Venta registrada exitosamente.");
+            e.target.reset();
+            cargarVentas();
+            cargarDashboard();
+        } else {
+            alert("Error al guardar venta: " + (dataVenta.error || "Asegúrese de seleccionar cliente y prenda."));
+        }
+    } catch (error) {
+        alert("Error al conectar con la API.");
+    } finally {
+        if (btn) btn.disabled = false;
     }
 }
 
-// PRENDAS (Guarda el atributo data-precio correctamente)
+// PRENDAS
 async function cargarPrendas() {
     try {
         const res = await fetch('api.php?entity=prendas&action=listar');
@@ -253,49 +305,6 @@ async function cargarVentas() {
         });
     } catch (error) {
         console.error("Error ventas:", error);
-    }
-}
-
-async function guardarVenta(e) {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const btn = document.getElementById('btn-procesar-venta');
-
-    if (btn) {
-        btn.textContent = "Procesando Pasarela...";
-        btn.disabled = true;
-    }
-
-    try {
-        const resPasarela = await fetch('api.php?entity=ventas&action=procesar_pasarela', {
-            method: 'POST',
-            body: formData
-        });
-        const dataPasarela = await resPasarela.json();
-
-        if (dataPasarela.success) {
-            const resVenta = await fetch('api.php?entity=ventas&action=guardar', {
-                method: 'POST',
-                body: formData
-            });
-            const dataVenta = await resVenta.json();
-
-            if (dataVenta.success) {
-                alert(`¡Pago Aprobado!\nID Transacción: ${dataPasarela.transaction_id}\nVenta guardada en MySQL exitosamente.`);
-                e.target.reset();
-                cargarVentas();
-                cargarDashboard();
-            } else {
-                alert("Error al guardar en BD: " + dataVenta.error);
-            }
-        }
-    } catch (error) {
-        alert("Error procesando pasarela.");
-    } finally {
-        if (btn) {
-            btn.textContent = "Procesar Venta";
-            btn.disabled = false;
-        }
     }
 }
 
