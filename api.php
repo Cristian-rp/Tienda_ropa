@@ -1,15 +1,24 @@
 <?php
 error_reporting(0);
 ini_set('display_errors', 0);
+header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=utf-8");
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
 
 include("db.php");
 
 $entity = $_GET['entity'] ?? 'prendas';
 $action = $_GET['action'] ?? 'listar';
 
+// ----------------------------------------------------
 // 1. MÓDULO PROVEEDORES
-
+// ----------------------------------------------------
 if ($entity === 'proveedores') {
     if ($action === 'listar') {
         $res = $conexion->query("SELECT * FROM proveedores ORDER BY id DESC");
@@ -36,8 +45,9 @@ if ($entity === 'proveedores') {
     }
 }
 
+// ----------------------------------------------------
 // 2. MÓDULO CLIENTES
-
+// ----------------------------------------------------
 if ($entity === 'clientes') {
     if ($action === 'listar') {
         $res = $conexion->query("SELECT * FROM clientes ORDER BY id DESC");
@@ -64,11 +74,11 @@ if ($entity === 'clientes') {
     }
 }
 
+// ----------------------------------------------------
 // 3. MÓDULO PRENDAS
-
+// ----------------------------------------------------
 if ($entity === 'prendas') {
     if ($action === 'listar') {
-        // Usamos LEFT JOIN para que traiga la prenda incluso si id_proveedor es NULL
         $sql = "SELECT p.*, COALESCE(pr.nombre_empresa, 'Sin Proveedor') AS proveedor 
                 FROM prendas p 
                 LEFT JOIN proveedores pr ON p.id_proveedor = pr.id 
@@ -117,8 +127,9 @@ if ($entity === 'prendas') {
     }
 }
 
-// 4. MÓDULO VENTAS
-
+// ----------------------------------------------------
+// 4. MÓDULO VENTAS (CON SERVICIO WEB DE PASARELA)
+// ----------------------------------------------------
 if ($entity === 'ventas') {
     if ($action === 'listar') {
         $sql = "SELECT v.*, p.nombre AS prenda, c.nombre AS cliente 
@@ -130,6 +141,22 @@ if ($entity === 'ventas') {
         echo json_encode($res ? $res->fetch_all(MYSQLI_ASSOC) : []);
         exit();
     }
+
+    if ($action === 'procesar_pasarela') {
+        // Consumo del Servicio Web de Pasarela de Pago
+        $metodo = $_POST['metodo_pago'] ?? 'Efectivo';
+        $total = $_POST['total'] ?? 0;
+        
+        $tx_id = "API-TXN-" . strtoupper(substr(md5(uniqid(rand(), true)), 0, 8));
+        
+        echo json_encode([
+            "success" => true,
+            "transaction_id" => $tx_id,
+            "message" => "Transacción aprobada por Pasarela de Pago ($metodo) por un monto de $$total"
+        ]);
+        exit();
+    }
+
     if ($action === 'guardar') {
         $stmt = $conexion->prepare("INSERT INTO ventas (id_prenda, id_cliente, cantidad, total, metodo_pago) VALUES (?, ?, ?, ?, ?)");
         $stmt->bind_param("iiids", $_POST['id_prenda'], $_POST['id_cliente'], $_POST['cantidad'], $_POST['total'], $_POST['metodo_pago']);
@@ -142,6 +169,7 @@ if ($entity === 'ventas') {
         }
         exit();
     }
+
     if ($action === 'eliminar') {
         $stmt = $conexion->prepare("DELETE FROM ventas WHERE id=?");
         $stmt->bind_param("i", $_GET['id']);
@@ -150,23 +178,20 @@ if ($entity === 'ventas') {
     }
 }
 
-// 5. NUEVO SERVICIO INTEGRADO: DASHBOARD & ESTADÍSTICAS
-
+// ----------------------------------------------------
+// 5. SERVICIO INTEGRADO: DASHBOARD & ESTADÍSTICAS
+// ----------------------------------------------------
 if ($entity === 'dashboard') {
     if ($action === 'resumen') {
-        // 1. Total acumulado de ingresos y cantidad de ventas
         $resVentas = $conexion->query("SELECT COUNT(*) AS total_ventas, COALESCE(SUM(total), 0) AS ingresos_totales FROM ventas");
-        $metrics = $resVentas->fetch_assoc();
+        $metrics = $resVentas ? $resVentas->fetch_assoc() : ["total_ventas" => 0, "ingresos_totales" => 0];
 
-        // 2. Total de clientes registrados
         $resClientes = $conexion->query("SELECT COUNT(*) AS total_clientes FROM clientes");
-        $metrics['total_clientes'] = $resClientes->fetch_assoc()['total_clientes'];
+        $metrics['total_clientes'] = $resClientes ? $resClientes->fetch_assoc()['total_clientes'] : 0;
 
-        // 3. Total de prendas en inventario
         $resPrendas = $conexion->query("SELECT COUNT(*) AS total_prendas FROM prendas");
-        $metrics['total_prendas'] = $resPrendas->fetch_assoc()['total_prendas'];
+        $metrics['total_prendas'] = $resPrendas ? $resPrendas->fetch_assoc()['total_prendas'] : 0;
 
-        // 4. Producto / Prenda más vendida
         $sqlTop = "SELECT p.nombre, SUM(v.cantidad) AS unidades_vendidas 
                    FROM ventas v 
                    JOIN prendas p ON v.id_prenda = p.id 
@@ -181,4 +206,7 @@ if ($entity === 'dashboard') {
         exit();
     }
 }
+
+http_response_code(404);
+echo json_encode(["success" => false, "message" => "Ruta de API no encontrada."]);
 ?>

@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Inventario - Tienda de Ropa</title>
     <link rel="stylesheet" href="style.css">
+    <!-- API de Mapas Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body>
     <div class="container">
@@ -202,11 +205,11 @@
                 </div>
             </section>
 
-            <!-- PESTAÑA 5: VENTAS -->
+            <!-- PESTAÑA 5: VENTAS (PASARELA + MAPA) -->
             <section id="tab-ventas" class="tab-content">
                 <div class="layout-two-columns">
                     <div class="card-sidebar">
-                        <h2 class="card-title">Registrar Venta</h2>
+                        <h2 class="card-title">Registrar Venta (Pasarela)</h2>
                         <form id="form-venta" class="form-vertical">
                             <div class="form-group">
                                 <label>CLIENTE:</label>
@@ -222,22 +225,26 @@
                             </div>
                             <div class="form-group">
                                 <label>CANTIDAD:</label>
-                                <input type="number" name="cantidad" value="1" min="1" required>
+                                <input type="number" name="cantidad" id="venta-cantidad" value="1" min="1" required>
                             </div>
                             <div class="form-group">
-                                <label>TOTAL $ (OPCIONAL):</label>
-                                <input type="number" step="0.01" name="total">
+                                <label>TOTAL ($):</label>
+                                <input type="number" step="0.01" name="total" id="venta-total" readonly>
                             </div>
                             <div class="form-group">
-                                <label>MÉTODO PAGO (MYSQL ENUM):</label>
+                                <label>MÉTODO PAGO (PASARELA API):</label>
                                 <select name="metodo_pago" required>
                                     <option value="">Seleccione...</option>
-                                    <option value="Efectivo">Efectivo</option>
-                                    <option value="Tarjeta">Tarjeta</option>
-                                    <option value="Transferencia">Transferencia</option>
+                                    <option value="Efectivo">Efectivo (Contraentrega)</option>
+                                    <option value="Tarjeta">Tarjeta Débito/Crédito (API)</option>
+                                    <option value="Transferencia">Transferencia PSE (API)</option>
                                 </select>
                             </div>
-                            <button type="submit">Procesar Venta</button>
+                            <div class="form-group">
+                                <label>UBICACIÓN DE ENTREGA (MAPA API):</label>
+                                <div id="map"></div>
+                            </div>
+                            <button type="submit" id="btn-procesar-venta">Procesar Pago y Venta</button>
                         </form>
                     </div>
                     <div class="card-main">

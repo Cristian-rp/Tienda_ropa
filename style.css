@@ -29,7 +29,6 @@ header h1 {
     letter-spacing: 0.2px;
 }
 
-/* NAVEGACIÓN DE PESTAÑAS */
 .tabs-nav {
     display: flex;
     gap: 10px;
@@ -60,7 +59,6 @@ header h1 {
     font-weight: 600;
 }
 
-/* OCULTAR PESTAÑAS INACTIVAS */
 .tab-content {
     display: none !important;
 }
@@ -69,7 +67,6 @@ header h1 {
     display: block !important;
 }
 
-/* LAYOUT 2 COLUMNAS */
 .layout-two-columns {
     display: grid;
     grid-template-columns: 320px 1fr;
@@ -91,7 +88,6 @@ header h1 {
     margin-bottom: 20px;
 }
 
-/* FORMULARIOS */
 .form-vertical {
     display: flex;
     flex-direction: column;
@@ -132,6 +128,12 @@ input:focus, select:focus {
     border-color: #e06d3b;
 }
 
+#map {
+    height: 150px;
+    border-radius: 6px;
+    border: 1px solid #323246;
+}
+
 button[type="submit"] {
     background-color: #e06d3b;
     color: #ffffff;
@@ -149,7 +151,6 @@ button[type="submit"]:hover {
     background-color: #c85a2b;
 }
 
-/* TABLA */
 .table-container {
     overflow-x: auto;
 }
@@ -195,7 +196,6 @@ td button:hover {
     background-color: #d63031;
 }
 
-/* DASHBOARD */
 .metrics-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -212,7 +212,7 @@ td button:hover {
 
 .card-metric h3 {
     font-size: 0.75rem;
-    color: #a0a0b0;
+    color: #a0a0b8;
     text-transform: uppercase;
     margin-bottom: 10px;
 }

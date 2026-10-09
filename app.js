@@ -1,3 +1,5 @@
+let mapInstance = null;
+
 document.addEventListener('DOMContentLoaded', () => {
     initTabs();
 
@@ -11,6 +13,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('form-cliente').addEventListener('submit', guardarCliente);
     document.getElementById('form-prenda').addEventListener('submit', guardarPrenda);
     document.getElementById('form-venta').addEventListener('submit', guardarVenta);
+
+    document.getElementById('select-prenda-venta').addEventListener('change', calcularTotalVenta);
+    document.getElementById('venta-cantidad').addEventListener('input', calcularTotalVenta);
 });
 
 function initTabs() {
@@ -29,8 +34,30 @@ function initTabs() {
             if (targetElement) {
                 targetElement.classList.add('active');
             }
+
+            if (target === 'tab-ventas') {
+                setTimeout(initMap, 200);
+            }
         });
     });
+}
+
+// INICIALIZACIÓN DE SERVICIO DE MAPA
+function initMap() {
+    if (mapInstance || !document.getElementById('map')) return;
+    mapInstance = L.map('map').setView([4.5802, -74.2206], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap'
+    }).addTo(mapInstance);
+    L.marker([4.5802, -74.2206], { draggable: true }).addTo(mapInstance);
+}
+
+function calcularTotalVenta() {
+    const select = document.getElementById('select-prenda-venta');
+    const option = select.options[select.selectedIndex];
+    const precio = option ? parseFloat(option.dataset.precio || 0) : 0;
+    const cantidad = parseInt(document.getElementById('venta-cantidad').value || 1);
+    document.getElementById('venta-total').value = (precio * cantidad).toFixed(2);
 }
 
 // DASHBOARD
@@ -224,24 +251,41 @@ async function cargarVentas() {
 async function guardarVenta(e) {
     e.preventDefault();
     const formData = new FormData(e.target);
-    
-    const selectPrenda = document.getElementById('select-prenda-venta');
-    const optionSelected = selectPrenda.options[selectPrenda.selectedIndex];
-    const precioUnitario = optionSelected ? parseFloat(optionSelected.dataset.precio || 0) : 0;
-    const cantidad = parseInt(formData.get('cantidad') || 1);
-    
-    if (!formData.get('total') || parseFloat(formData.get('total')) === 0) {
-        formData.set('total', (precioUnitario * cantidad).toFixed(2));
-    }
+    const btn = document.getElementById('btn-procesar-venta');
 
-    const res = await fetch('api.php?entity=ventas&action=guardar', { method: 'POST', body: formData });
-    const data = await res.json();
-    if (data.success) {
-        e.target.reset();
-        cargarVentas();
-        cargarDashboard();
-    } else {
-        alert("Error al registrar venta: " + (data.error || "Verifique los datos ingresados."));
+    btn.textContent = "Procesando Pasarela...";
+    btn.disabled = true;
+
+    try {
+        // 1. Simulación de aprobación de Pasarela vía API
+        const resPasarela = await fetch('api.php?entity=ventas&action=procesar_pasarela', {
+            method: 'POST',
+            body: formData
+        });
+        const dataPasarela = await resPasarela.json();
+
+        if (dataPasarela.success) {
+            // 2. Inserción a la base de datos MySQL
+            const resVenta = await fetch('api.php?entity=ventas&action=guardar', {
+                method: 'POST',
+                body: formData
+            });
+            const dataVenta = await resVenta.json();
+
+            if (dataVenta.success) {
+                alert(`¡Pago Aprobado!\nID Transacción: ${dataPasarela.transaction_id}\nVenta guardada en MySQL exitosamente.`);
+                e.target.reset();
+                cargarVentas();
+                cargarDashboard();
+            } else {
+                alert("Error al guardar en BD: " + dataVenta.error);
+            }
+        }
+    } catch (error) {
+        alert("Error procesando pasarela.");
+    } finally {
+        btn.textContent = "Procesar Pago y Venta";
+        btn.disabled = false;
     }
 }
 
