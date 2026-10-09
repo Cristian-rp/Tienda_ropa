@@ -1,12 +1,15 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Inicializar carga de datos
+    // Inicializar listeners de pestañas
+    initTabs();
+
+    // Cargar datos
     cargarDashboard();
     cargarProveedores();
     cargarClientes();
     cargarPrendas();
     cargarVentas();
 
-    // Eventos de los formularios
+    // Eventos Formularios
     document.getElementById('form-proveedor').addEventListener('submit', guardarProveedor);
     document.getElementById('form-cliente').addEventListener('submit', guardarCliente);
     document.getElementById('form-prenda').addEventListener('submit', guardarPrenda);
@@ -14,12 +17,32 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ==========================================
-// 1. SERVICIO INTEGRADO: DASHBOARD & MÉTRICAS
+// CONTROL DE PESTAÑAS (TABS)
+// ==========================================
+function initTabs() {
+    const buttons = document.querySelectorAll('.tab-btn');
+    const contents = document.querySelectorAll('.tab-content');
+
+    buttons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const target = btn.getAttribute('data-tab');
+
+            buttons.forEach(b => b.classList.remove('active'));
+            contents.forEach(c => c.classList.remove('active'));
+
+            btn.classList.add('active');
+            document.getElementById(target).classList.add('active');
+        });
+    });
+}
+
+// ==========================================
+// DASHBOARD
 // ==========================================
 async function cargarDashboard() {
     try {
-        const respuesta = await fetch('api.php?entity=dashboard&action=resumen');
-        const resultado = await respuesta.json();
+        const res = await fetch('api.php?entity=dashboard&action=resumen');
+        const resultado = await res.json();
 
         if (resultado.success) {
             const data = resultado.data;
@@ -34,7 +57,7 @@ async function cargarDashboard() {
 }
 
 // ==========================================
-// 2. MÓDULO PROVEEDORES
+// PROVEEDORES
 // ==========================================
 async function cargarProveedores() {
     try {
@@ -80,7 +103,7 @@ async function guardarProveedor(e) {
 }
 
 // ==========================================
-// 3. MÓDULO CLIENTES
+// CLIENTES
 // ==========================================
 async function cargarClientes() {
     try {
@@ -128,7 +151,7 @@ async function guardarCliente(e) {
 }
 
 // ==========================================
-// 4. MÓDULO PRENDAS (INVENTARIO)
+// PRENDAS
 // ==========================================
 async function cargarPrendas() {
     try {
@@ -181,7 +204,7 @@ async function guardarPrenda(e) {
 }
 
 // ==========================================
-// 5. MÓDULO VENTAS
+// VENTAS
 // ==========================================
 async function cargarVentas() {
     try {
@@ -215,7 +238,6 @@ async function guardarVenta(e) {
     e.preventDefault();
     const formData = new FormData(e.target);
     
-    // Calcular total automáticamente si no está puesto
     const selectPrenda = document.getElementById('select-prenda-venta');
     const optionSelected = selectPrenda.options[selectPrenda.selectedIndex];
     const precioUnitario = optionSelected ? parseFloat(optionSelected.dataset.precio || 0) : 0;
@@ -232,12 +254,12 @@ async function guardarVenta(e) {
         cargarVentas();
         cargarDashboard();
     } else {
-        alert("Error al registrar venta: " + (data.error || "Asegúrese de haber registrado clientes y prendas previa a la venta."));
+        alert("Error al registrar venta: " + (data.error || "Verifique los datos cargados."));
     }
 }
 
 // ==========================================
-// FUNCIÓN GENÉRICA PARA ELIMINAR
+// ELIMINAR
 // ==========================================
 async function eliminarEntidad(entity, id) {
     if (!confirm("¿Está seguro de eliminar este registro?")) return;
