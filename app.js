@@ -1,3 +1,5 @@
+let mapInstance = null;
+
 document.addEventListener('DOMContentLoaded', () => {
     initTabs();
 
@@ -36,8 +38,29 @@ function initTabs() {
             if (targetElement) {
                 targetElement.classList.add('active');
             }
+
+            // Renderizar mapa al ingresar a la pestaña de ventas
+            if (target === 'tab-ventas') {
+                setTimeout(initMap, 300);
+            }
         });
     });
+}
+
+// INICIALIZAR MAPA INTERACTIVO (LEAFLET)
+function initMap() {
+    const mapContainer = document.getElementById('map');
+    if (!mapContainer) return;
+
+    if (!mapInstance) {
+        mapInstance = L.map('map').setView([4.5802, -74.2206], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap'
+        }).addTo(mapInstance);
+        L.marker([4.5802, -74.2206], { draggable: true }).addTo(mapInstance);
+    } else {
+        mapInstance.invalidateSize();
+    }
 }
 
 // CÁLCULO AUTOMÁTICO DEL TOTAL
@@ -67,7 +90,7 @@ async function guardarVenta(e) {
     if (btn) btn.disabled = true;
 
     try {
-        // 1. Guardar primero la venta en la Base de Datos
+        // 1. Guardar la venta en la Base de Datos
         const resVenta = await fetch('api.php?entity=ventas&action=guardar', {
             method: 'POST',
             body: formData
@@ -79,7 +102,6 @@ async function guardarVenta(e) {
             if (metodo === 'Tarjeta' || metodo === 'Transferencia') {
                 const txId = "TXN-" + Math.random().toString(36).substring(2, 9).toUpperCase();
                 
-                // Generar contenido HTML dinámico para la nueva pestaña
                 const checkoutWin = window.open("", "_blank");
                 if (checkoutWin) {
                     checkoutWin.document.write(`

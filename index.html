@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Inventario - Tienda de Ropa</title>
     <link rel="stylesheet" href="style.css">
+    <!-- API DE MAPAS LEAFLET -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body>
     <div class="container">
@@ -202,7 +205,7 @@
                 </div>
             </section>
 
-            <!-- PESTAÑA 5: VENTAS -->
+            <!-- PESTAÑA 5: VENTAS (CON MAPA Y PASARELA) -->
             <section id="tab-ventas" class="tab-content">
                 <div class="layout-two-columns">
                     <div class="card-sidebar">
@@ -236,6 +239,10 @@
                                     <option value="Tarjeta">Tarjeta Débito/Crédito (Pasarela Web)</option>
                                     <option value="Transferencia">Transferencia PSE (Pasarela Web)</option>
                                 </select>
+                            </div>
+                            <div class="form-group">
+                                <label>PUNTO DE ENTREGA (MAPA API):</label>
+                                <div id="map"></div>
                             </div>
                             <button type="submit" id="btn-procesar-venta">Procesar Venta</button>
                         </form>
